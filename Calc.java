@@ -41,6 +41,8 @@ public class Calc implements ActionListener {
 		} catch (Exception e2) {
 			intS.add("0");
 		}
+		varS = doPlusMin(doMultDiv(varS));
+		intS = doPlusMin(doMultDiv(intS));
 	}
 	public static void main(String[] args) {
 		new Calc();
@@ -58,11 +60,65 @@ public class Calc implements ActionListener {
 		return out;
 	}
 	public ArrayList<String> doMultDiv(ArrayList<String> in){
-		ArrayList<String> out = new ArrayList<String>();
+		ArrayList<String> out = in;
+		for (int i = 0; i < out.size(); i++) {
+			if (out.get(i).matches("[*/]")) {
+				if (i!=0&&i+1!=out.size()) {
+					double temp = Double.parseDouble(out.get(i-1));
+					double temp2 = Double.parseDouble(out.get(i+1));
+					if (in.get(i).contentEquals("*")) {
+						out.remove(i+1);
+						out.remove(i);
+						out.remove(i-1);
+						try {
+							out.add(i, (temp*temp2)+"");
+						} catch (Exception e) {
+							out.add((temp*temp2)+"");
+						}
+					}else if (in.get(i).contentEquals("/")) {
+						out.remove(i+1);
+						out.remove(i);
+						out.remove(i-1);
+						try {
+							out.add(i, (temp/temp2)+"");
+						} catch (Exception e) {
+							out.add((temp/temp2)+"");
+						}
+					}
+				}
+			}
+		}
 		return out;
 	}
 	public ArrayList<String> doPlusMin(ArrayList<String> in){
-		ArrayList<String> out = new ArrayList<String>();
+		ArrayList<String> out = in;
+		for (int i = 0; i < out.size(); i++) {
+			if (out.get(i).matches("[+-]")) {
+				if (i!=0&&i+1!=out.size()) {
+					double temp = Double.parseDouble(out.get(i-1));
+					double temp2 = Double.parseDouble(out.get(i+1));
+					if (in.get(i).contentEquals("+")) {
+						out.remove(i+1);
+						out.remove(i);
+						out.remove(i-1);
+						try {
+							out.add(i, (temp+temp2)+"");
+						} catch (Exception e) {
+							out.add((temp+temp2)+"");
+						}
+					}else if (in.get(i).contentEquals("-")) {
+						out.remove(i+1);
+						out.remove(i);
+						out.remove(i-1);
+						try {
+							out.add(i, (temp-temp2)+"");
+						} catch (Exception e) {
+							out.add((temp-temp2)+"");
+						}
+					}
+				}
+			}
+		}
 		return out;
 	}
 }
