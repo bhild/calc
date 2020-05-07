@@ -79,7 +79,7 @@ public class Calc implements ActionListener {
 			if (out.get(i).matches("[*/]")) {
 				if (i!=0&&i+1!=out.size()) {
 					double temp = Double.parseDouble(out.get(i-1).replace("x", ""));
-					double temp2 = Double.parseDouble(out.get(i-1).replace("x", ""));
+					double temp2 = Double.parseDouble(out.get(i+1).replace("x", ""));
 					boolean cont = containsX(out.get(i-1)+out.get(i+1));
 					if (in.get(i).contentEquals("*")) {
 						out.remove(i+1);
@@ -111,7 +111,7 @@ public class Calc implements ActionListener {
 			if (out.get(i).matches("[+-]")) {
 				if (i!=0&&i+1!=out.size()) {
 					double temp = Double.parseDouble(out.get(i-1).replace("x", ""));
-					double temp2 = Double.parseDouble(out.get(i-1).replace("x", ""));
+					double temp2 = Double.parseDouble(out.get(i+1).replace("x", ""));
 					boolean x1 = containsX(out.get(i-1));
 					boolean x2 = containsX(out.get(i+1));
 					if (in.get(i).contentEquals("+")&&x1==x2) {
