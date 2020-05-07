@@ -34,6 +34,7 @@ public class Calc implements ActionListener {
 	} 	
 	@Override
 	public void actionPerformed(ActionEvent e){  
+		op.setText("");
 		ArrayList<String> varS = format(tf1.getText().split("=")[0]);
 		ArrayList<String> intS = new ArrayList<String>();
 		try {
@@ -47,7 +48,11 @@ public class Calc implements ActionListener {
 			intS = doMultDiv(intS);
 			addNewEquation(varS, intS);
 		}
+		ArrayList<String> temp1 = new ArrayList<String>();
+		ArrayList<String> temp2 = new ArrayList<String>();
 		while (varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-")) {
+			temp1=varS;
+			temp2=intS;
 			varS = doPlusMin(varS);
 			intS = doPlusMin(intS);
 			addNewEquation(varS, intS);
@@ -73,25 +78,26 @@ public class Calc implements ActionListener {
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[*/]")) {
 				if (i!=0&&i+1!=out.size()) {
-					double temp = Double.parseDouble(out.get(i-1));
-					double temp2 = Double.parseDouble(out.get(i+1));
+					double temp = Double.parseDouble(out.get(i-1).replace("x", ""));
+					double temp2 = Double.parseDouble(out.get(i-1).replace("x", ""));
+					boolean cont = containsX(out.get(i-1)+out.get(i+1));
 					if (in.get(i).contentEquals("*")) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (temp*temp2)+"");
+							out.add(i-1, (cont)?(temp*temp2)+"x":(temp*temp2)+"");
 						} catch (Exception e) {
-							out.add((temp*temp2)+"");
+							out.add((cont)?(temp*temp2)+"x":(temp*temp2)+"");
 						}
 					}else if (in.get(i).contentEquals("/")) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (temp/temp2)+"");
+							out.add(i-1, (cont)?(temp/temp2)+"x":(temp*temp2)+"");
 						} catch (Exception e) {
-							out.add((temp/temp2)+"");
+							out.add((cont)?(temp/temp2)+"x":(temp*temp2)+"");
 						}
 					}
 				}
@@ -104,25 +110,27 @@ public class Calc implements ActionListener {
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[+-]")) {
 				if (i!=0&&i+1!=out.size()) {
-					double temp = Double.parseDouble(out.get(i-1));
-					double temp2 = Double.parseDouble(out.get(i+1));
-					if (in.get(i).contentEquals("+")) {
+					double temp = Double.parseDouble(out.get(i-1).replace("x", ""));
+					double temp2 = Double.parseDouble(out.get(i-1).replace("x", ""));
+					boolean x1 = containsX(out.get(i-1));
+					boolean x2 = containsX(out.get(i+1));
+					if (in.get(i).contentEquals("+")&&x1==x2) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (temp+temp2)+"");
+							out.add(i-1, (x1)?(temp+temp2)+"x":(temp*temp2)+"");
 						} catch (Exception e) {
-							out.add((temp+temp2)+"");
+							out.add((x1)?(temp+temp2)+"x":(temp*temp2)+"");
 						}
-					}else if (in.get(i).contentEquals("-")) {
+					}else if (in.get(i).contentEquals("-")&&x1==x2) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (temp-temp2)+"");
+							out.add(i-1, (x1)?(temp-temp2)+"x":(temp*temp2)+"");
 						} catch (Exception e) {
-							out.add((temp-temp2)+"");
+							out.add((x1)?(temp-temp2)+"x":(temp*temp2)+"");
 						}
 					}
 				}
@@ -142,5 +150,8 @@ public class Calc implements ActionListener {
 			updateOutPutText(intS.get(i));
 		}
 		updateOutPutText("\n");
+	}
+	public boolean containsX(String s) {
+		return s.contains("x");
 	}
 }
