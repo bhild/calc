@@ -8,10 +8,10 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-
-
-
 public class Calc implements ActionListener {
+	public static void main(String[] args) {
+		new Calc();
+	}
 	JTextField tf1;
 	JTextArea op;  
 	String x="x";
@@ -58,13 +58,10 @@ public class Calc implements ActionListener {
 			addNewEquation(varS, intS);
 		}
 	}
-	public static void main(String[] args) {
-		new Calc();
-	}
 	public ArrayList<String> format(String in){
 		String coolIn = "";
 		for (int i = 0; i < in.length(); i++) {
-			coolIn+=((Character.toString(in.charAt(i)).matches("[^0-9a-z]"))?" "+Character.toString(in.charAt(i))+" ":Character.toString(in.charAt(i)));
+			coolIn+=((Character.toString(in.charAt(i)).matches("[^0-9a-z ]"))?" "+Character.toString(in.charAt(i))+" ":Character.toString(in.charAt(i)));
 		}
 		String[] inT = coolIn.split(" ");
 		ArrayList<String> out = new ArrayList<String>();
@@ -95,9 +92,9 @@ public class Calc implements ActionListener {
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (cont)?(temp/temp2)+"x":(temp*temp2)+"");
+							out.add(i-1, (cont)?(temp/temp2)+"x":(temp/temp2)+"");
 						} catch (Exception e) {
-							out.add((cont)?(temp/temp2)+"x":(temp*temp2)+"");
+							out.add((cont)?(temp/temp2)+"x":(temp/temp2)+"");
 						}
 					}
 				}
@@ -119,18 +116,18 @@ public class Calc implements ActionListener {
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (x1)?(temp+temp2)+"x":(temp*temp2)+"");
+							out.add(i-1, (x1)?(temp+temp2)+"x":(temp+temp2)+"");
 						} catch (Exception e) {
-							out.add((x1)?(temp+temp2)+"x":(temp*temp2)+"");
+							out.add((x1)?(temp+temp2)+"x":(temp+temp2)+"");
 						}
 					}else if (in.get(i).contentEquals("-")&&x1==x2) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (x1)?(temp-temp2)+"x":(temp*temp2)+"");
+							out.add(i-1, (x1)?(temp-temp2)+"x":(temp-temp2)+"");
 						} catch (Exception e) {
-							out.add((x1)?(temp-temp2)+"x":(temp*temp2)+"");
+							out.add((x1)?(temp-temp2)+"x":(temp-temp2)+"");
 						}
 					}
 				}
