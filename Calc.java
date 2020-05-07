@@ -34,9 +34,12 @@ public class Calc implements ActionListener {
 	} 	
 	@Override
 	public void actionPerformed(ActionEvent e){  
-		ArrayList<String> inT = format(tf1.getText());
-		for (int i = 0; i < inT.size(); i++) {
-			System.out.println(inT.get(i));
+		ArrayList<String> varS = format(tf1.getText().split("=")[0]);
+		ArrayList<String> intS = new ArrayList<String>();
+		try {
+			intS = format(tf1.getText().split("=")[1]);
+		} catch (Exception e2) {
+			intS.add("0");
 		}
 	}
 	public static void main(String[] args) {
@@ -52,6 +55,14 @@ public class Calc implements ActionListener {
 		for (String i : inT) {
 			out.add(i);
 		}
+		return out;
+	}
+	public ArrayList<String> doMultDiv(ArrayList<String> in){
+		ArrayList<String> out = new ArrayList<String>();
+		return out;
+	}
+	public ArrayList<String> doPlusMin(ArrayList<String> in){
+		ArrayList<String> out = new ArrayList<String>();
 		return out;
 	}
 }
