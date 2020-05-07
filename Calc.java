@@ -41,8 +41,11 @@ public class Calc implements ActionListener {
 		} catch (Exception e2) {
 			intS.add("0");
 		}
+		addNewEquation(varS, intS);
 		varS = doPlusMin(doMultDiv(varS));
 		intS = doPlusMin(doMultDiv(intS));
+		addNewEquation(varS, intS);
+		
 	}
 	public static void main(String[] args) {
 		new Calc();
@@ -120,5 +123,18 @@ public class Calc implements ActionListener {
 			}
 		}
 		return out;
+	}
+	public void updateOutPutText(String in) {
+		op.setText(op.getText()+in);
+	}
+	public void addNewEquation(ArrayList<String> varS,ArrayList<String> intS) {
+		for (int i = 0; i < varS.size(); i++) {
+			updateOutPutText(varS.get(i));
+		}
+		updateOutPutText("=");
+		for (int i = 0; i < intS.size(); i++) {
+			updateOutPutText(intS.get(i));
+		}
+		updateOutPutText("\n");
 	}
 }
