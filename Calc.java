@@ -42,10 +42,16 @@ public class Calc implements ActionListener {
 			intS.add("0");
 		}
 		addNewEquation(varS, intS);
-		varS = doPlusMin(doMultDiv(varS));
-		intS = doPlusMin(doMultDiv(intS));
-		addNewEquation(varS, intS);
-		
+		while (varS.contains("*")||varS.contains("/")||intS.contains("*")||intS.contains("/")) {
+			varS = doMultDiv(varS);
+			intS = doMultDiv(intS);
+			addNewEquation(varS, intS);
+		}
+		while (varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-")) {
+			varS = doPlusMin(varS);
+			intS = doPlusMin(intS);
+			addNewEquation(varS, intS);
+		}
 	}
 	public static void main(String[] args) {
 		new Calc();
@@ -74,7 +80,7 @@ public class Calc implements ActionListener {
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i, (temp*temp2)+"");
+							out.add(i-1, (temp*temp2)+"");
 						} catch (Exception e) {
 							out.add((temp*temp2)+"");
 						}
@@ -83,7 +89,7 @@ public class Calc implements ActionListener {
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i, (temp/temp2)+"");
+							out.add(i-1, (temp/temp2)+"");
 						} catch (Exception e) {
 							out.add((temp/temp2)+"");
 						}
@@ -105,7 +111,7 @@ public class Calc implements ActionListener {
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i, (temp+temp2)+"");
+							out.add(i-1, (temp+temp2)+"");
 						} catch (Exception e) {
 							out.add((temp+temp2)+"");
 						}
@@ -114,7 +120,7 @@ public class Calc implements ActionListener {
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i, (temp-temp2)+"");
+							out.add(i-1, (temp-temp2)+"");
 						} catch (Exception e) {
 							out.add((temp-temp2)+"");
 						}
