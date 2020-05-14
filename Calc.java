@@ -44,8 +44,8 @@ public class Calc implements ActionListener {
 		}
 		addNewEquation(varS, intS);
 		while (varS.contains("*")||varS.contains("/")||intS.contains("*")||intS.contains("/")) {
-			varS = doMultDiv(varS);
-			intS = doMultDiv(intS);
+			doMultDiv(varS);
+			doMultDiv(intS);
 			addNewEquation(varS, intS);
 		}
 		ArrayList<String> temp1 = new ArrayList<String>();
@@ -53,8 +53,8 @@ public class Calc implements ActionListener {
 		while (varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-")) {
 			temp1=varS;
 			temp2=intS;
-			varS = doPlusMin(varS);
-			intS = doPlusMin(intS);
+			doPlusMin(varS);
+			doPlusMin(intS);
 			addNewEquation(varS, intS);
 		}
 	}
@@ -66,11 +66,11 @@ public class Calc implements ActionListener {
 		String[] inT = coolIn.split(" ");
 		ArrayList<String> out = new ArrayList<String>();
 		for (String i : inT) {
-			out.add(i);
+			out.add((!i.matches("^x$"))?i:"1"+i);
 		}
 		return out;
 	}
-	public ArrayList<String> doMultDiv(ArrayList<String> in){
+	public void doMultDiv(ArrayList<String> in){
 		ArrayList<String> out = in;
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[*/]")) {
@@ -100,9 +100,9 @@ public class Calc implements ActionListener {
 				}
 			}
 		}
-		return out;
+		in =  out;
 	}
-	public ArrayList<String> doPlusMin(ArrayList<String> in){
+	public void doPlusMin(ArrayList<String> in){
 		ArrayList<String> out = in;
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[+-]")) {
@@ -133,7 +133,7 @@ public class Calc implements ActionListener {
 				}
 			}
 		}
-		return out;
+		in =  out;
 	}
 	public void updateOutPutText(String in) {
 		op.setText(op.getText()+in);
