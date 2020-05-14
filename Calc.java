@@ -48,14 +48,12 @@ public class Calc implements ActionListener {
 			doMultDiv(intS);
 			addNewEquation(varS, intS);
 		}
-		ArrayList<String> temp1 = new ArrayList<String>();
-		ArrayList<String> temp2 = new ArrayList<String>();
-		while (varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-")) {
-			temp1=varS;
-			temp2=intS;
+		int counter = 0;
+		while ((varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-"))&&counter<=Math.max(varS.size(),varS.size())) {
 			doPlusMin(varS);
 			doPlusMin(intS);
 			addNewEquation(varS, intS);
+			counter++;
 		}
 	}
 	public ArrayList<String> format(String in){
