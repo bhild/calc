@@ -8,15 +8,14 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class Calc implements ActionListener {
+@SuppressWarnings({ "unchecked", "serial" ,"static-access"})
+public class Calc extends JFrame implements ActionListener {
 	public static void main(String[] args) {
 		new Calc();
 	}
 	JTextField tf1;
 	JTextArea op;  
-	String x="x";
-	String pl="+";
-	String min="-";
+	String inputVar = "";
 	Calc(){  
 		JFrame f=new JFrame();  
 		tf1=new JTextField();  
@@ -48,23 +47,34 @@ public class Calc implements ActionListener {
 			doMultDiv(intS);
 			addNewEquation(varS, intS);
 		}
-		int counter = 0;
-		while ((varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-"))&&counter<=Math.max(varS.size(),varS.size())) {
+		ArrayList<String> varS2 = new ArrayList<String>();
+		ArrayList<String> intS2 = new ArrayList<String>();
+		while ((varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-"))&&(!varS2.equals(varS)||!intS2.equals(intS))) {
+			varS2 = (ArrayList<String>) varS.clone();
+			intS2 = (ArrayList<String>) intS.clone();
 			doPlusMin(varS);
 			doPlusMin(intS);
 			addNewEquation(varS, intS);
-			counter++;
 		}
+		String[] iso = isolateTerms(varS,intS);
+		varS = format(iso[0]);
+		intS = format(iso[1]);
+		addNewEquation(varS, intS);
 	}
 	public ArrayList<String> format(String in){
+		try {
+			inputVar = Character.toString(in.replaceAll("[^a-z]", "").charAt(0));
+		} catch (Exception e) {
+			inputVar = "x";
+		}
 		String coolIn = "";
 		for (int i = 0; i < in.length(); i++) {
-			coolIn+=((Character.toString(in.charAt(i)).matches("[^0-9a-z ]"))?" "+Character.toString(in.charAt(i))+" ":Character.toString(in.charAt(i)));
+			coolIn+=((Character.toString(in.charAt(i)).matches("[^0-9a-z. ]"))?" "+Character.toString(in.charAt(i))+" ":Character.toString(in.charAt(i)));
 		}
 		String[] inT = coolIn.split(" ");
 		ArrayList<String> out = new ArrayList<String>();
 		for (String i : inT) {
-			out.add((!i.matches("^x$"))?i:"1"+i);
+			out.add((!i.matches("^[a-z]$"))?i:"1"+i);
 		}
 		return out;
 	}
@@ -73,26 +83,26 @@ public class Calc implements ActionListener {
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[*/]")) {
 				if (i!=0&&i+1!=out.size()) {
-					double temp = Double.parseDouble(out.get(i-1).replace("x", ""));
-					double temp2 = Double.parseDouble(out.get(i+1).replace("x", ""));
+					double temp = Double.parseDouble(out.get(i-1).replace(inputVar, ""));
+					double temp2 = Double.parseDouble(out.get(i+1).replace(inputVar, ""));
 					boolean cont = containsX(out.get(i-1)+out.get(i+1));
 					if (in.get(i).contentEquals("*")) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (cont)?(temp*temp2)+"x":(temp*temp2)+"");
+							out.add(i-1, (cont)?(temp*temp2)+inputVar:(temp*temp2)+"");
 						} catch (Exception e) {
-							out.add((cont)?(temp*temp2)+"x":(temp*temp2)+"");
+							out.add((cont)?(temp*temp2)+inputVar:(temp*temp2)+"");
 						}
 					}else if (in.get(i).contentEquals("/")) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (cont)?(temp/temp2)+"x":(temp/temp2)+"");
+							out.add(i-1, (cont)?(temp/temp2)+inputVar:(temp/temp2)+"");
 						} catch (Exception e) {
-							out.add((cont)?(temp/temp2)+"x":(temp/temp2)+"");
+							out.add((cont)?(temp/temp2)+inputVar:(temp/temp2)+"");
 						}
 					}
 				}
@@ -105,8 +115,8 @@ public class Calc implements ActionListener {
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[+-]")) {
 				if (i!=0&&i+1!=out.size()) {
-					double temp = Double.parseDouble(out.get(i-1).replace("x", ""));
-					double temp2 = Double.parseDouble(out.get(i+1).replace("x", ""));
+					double temp = Double.parseDouble(out.get(i-1).replace(inputVar, ""));
+					double temp2 = Double.parseDouble(out.get(i+1).replace(inputVar, ""));
 					boolean x1 = containsX(out.get(i-1));
 					boolean x2 = containsX(out.get(i+1));
 					if (in.get(i).contentEquals("+")&&x1==x2) {
@@ -114,18 +124,18 @@ public class Calc implements ActionListener {
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (x1)?(temp+temp2)+"x":(temp+temp2)+"");
+							out.add(i-1, (x1)?(temp+temp2)+inputVar:(temp+temp2)+"");
 						} catch (Exception e) {
-							out.add((x1)?(temp+temp2)+"x":(temp+temp2)+"");
+							out.add((x1)?(temp+temp2)+inputVar:(temp+temp2)+"");
 						}
 					}else if (in.get(i).contentEquals("-")&&x1==x2) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (x1)?(temp-temp2)+"x":(temp-temp2)+"");
+							out.add(i-1, (x1)?(temp-temp2)+inputVar:(temp-temp2)+"");
 						} catch (Exception e) {
-							out.add((x1)?(temp-temp2)+"x":(temp-temp2)+"");
+							out.add((x1)?(temp-temp2)+inputVar:(temp-temp2)+"");
 						}
 					}
 				}
@@ -147,6 +157,29 @@ public class Calc implements ActionListener {
 		updateOutPutText("\n");
 	}
 	public boolean containsX(String s) {
-		return s.contains("x");
+		return s.contains(inputVar);
+	}
+	public String[] isolateTerms(ArrayList<String> varS,ArrayList<String> intS) {
+		String[] out = new String[2];
+		double vars = 0;
+		double constants = 0;
+		for (String s:varS) {
+			if(s.matches("[0-9.]*"+inputVar)) {
+				vars+=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+			}else if(s.matches("[0-9.]*")) {
+				constants-=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+			}
+		}
+		for (String s:intS) {
+			if(s.matches("[0-9.]*"+inputVar)) {
+				vars-=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+			}else if(s.matches("[0-9.]*")) {
+					constants+=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+			}
+		}
+		
+		out[0]= vars + inputVar;
+		out[1]=constants+"";
+		return out;
 	}
 }
