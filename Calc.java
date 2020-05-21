@@ -60,6 +60,8 @@ public class Calc extends JFrame implements ActionListener {
 		varS = format(iso[0]);
 		intS = format(iso[1]);
 		addNewEquation(varS, intS);
+		divideByCo(varS, intS);
+		 addNewEquation(varS, intS);
 	}
 	public ArrayList<String> format(String in){
 		try {
@@ -69,12 +71,13 @@ public class Calc extends JFrame implements ActionListener {
 		}
 		String coolIn = "";
 		for (int i = 0; i < in.length(); i++) {
-			coolIn+=((Character.toString(in.charAt(i)).matches("[^0-9a-z. ]"))?" "+Character.toString(in.charAt(i))+" ":Character.toString(in.charAt(i)));
+			String a = Character.toString(in.charAt(i));
+			coolIn+=(!(a.matches("[^0-9a-z. ]"))||i==0)?a:" "+a+" ";
 		}
 		String[] inT = coolIn.split(" ");
 		ArrayList<String> out = new ArrayList<String>();
 		for (String i : inT) {
-			out.add((!i.matches("^[a-z]$"))?i:"1"+i);
+			out.add((i.matches("^[-]?[a-z]$"))?"-1"+i.replace("-", ""):i);
 		}
 		return out;
 	}
@@ -163,23 +166,36 @@ public class Calc extends JFrame implements ActionListener {
 		String[] out = new String[2];
 		double vars = 0;
 		double constants = 0;
+		boolean lastIsNeg = false;
 		for (String s:varS) {
-			if(s.matches("[0-9.]*"+inputVar)) {
-				vars+=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
-			}else if(s.matches("[0-9.]*")) {
-				constants-=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+			if(s.matches("[-]?[0-9.]*"+inputVar)) {
+				vars+=(lastIsNeg)?-Double.parseDouble(s.replaceAll("[^0-9.-]", "")):Double.parseDouble(s.replaceAll("[^0-9.-]", ""));
+			}else if(s.matches("^[-]?[0-9.]+$")) {
+				constants-=(lastIsNeg)?-Double.parseDouble(s):Double.parseDouble(s);
+			}
+			if(s.matches("-")) {
+				lastIsNeg=true;
+			}else {
+				lastIsNeg=false;
 			}
 		}
 		for (String s:intS) {
-			if(s.matches("[0-9.]*"+inputVar)) {
-				vars-=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
-			}else if(s.matches("[0-9.]*")) {
-					constants+=Double.parseDouble(s.replaceAll("[^0-9.]", ""));
+			if(s.matches("[-]?[0-9.]*"+inputVar)) {
+				vars-=(lastIsNeg)?-Double.parseDouble(s.replaceAll("[^0-9.-]", "")):Double.parseDouble(s.replaceAll("[^0-9.-]", ""));
+			}else if(s.matches("^[-]?[0-9.]+$")) {
+					constants+=(lastIsNeg)?-Double.parseDouble(s):Double.parseDouble(s);
 			}
 		}
 		
 		out[0]= vars + inputVar;
 		out[1]=constants+"";
 		return out;
+	}
+	public void divideByCo(ArrayList<String> varS,ArrayList<String> intS) {
+		String s = varS.get(0).replace(inputVar, "");
+		double a = (!s.matches("-"))? Double.parseDouble(s):Double.parseDouble(varS.get(1).replace(inputVar, ""));
+		double b = (!intS.get(0).equals("-"))?Double.parseDouble(intS.get(0)):Double.parseDouble(intS.get(1));
+		varS.set(0, inputVar);
+		intS.set(0, (b/a)+"");
 	}
 }
