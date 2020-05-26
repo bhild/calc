@@ -15,7 +15,9 @@ public class Calc extends JFrame implements ActionListener {
 	}
 	JTextField tf1;
 	JTextArea op;  
-	String inputVar = "";
+	String alphabet = " abcdefghijklmnopqrstuvwxyz";
+	char[] lex = alphabet.toCharArray();
+	char[] lexUpper = alphabet.toUpperCase().toCharArray();
 	Calc(){  
 		JFrame f=new JFrame();  
 		tf1=new JTextField();  
@@ -30,6 +32,7 @@ public class Calc extends JFrame implements ActionListener {
 		f.setLayout(null);
 		f.setVisible(true); 
 		f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);
+		op.setText("a(lowercase) represents x in the input. b(lowerccase) is x^2 c is x^3 values greater than x^26 are invalid");
 	} 	
 	@Override
 	public void actionPerformed(ActionEvent e){  
@@ -54,21 +57,18 @@ public class Calc extends JFrame implements ActionListener {
 			intS2 = (ArrayList<String>) intS.clone();
 			doPlusMin(varS);
 			doPlusMin(intS);
-			addNewEquation(varS, intS);
+			if((!varS2.equals(varS)||!intS2.equals(intS)))
+				addNewEquation(varS, intS);
 		}
-		String[] iso = isolateTerms(varS,intS);
-		varS = format(iso[0]);
-		intS = format(iso[1]);
-		addNewEquation(varS, intS);
-		divideByCo(varS, intS);
-		 addNewEquation(varS, intS);
+		//String[] iso = isolateTerms(varS,intS);
+		//varS = format(iso[0]);
+		//intS = format(iso[1]);
+		//addNewEquation(varS, intS);
+		//divideByCo(varS, intS);
+		//addNewEquation(varS, intS);
+		
 	}
 	public ArrayList<String> format(String in){
-		try {
-			inputVar = Character.toString(in.replaceAll("[^a-z]", "").charAt(0));
-		} catch (Exception e) {
-			inputVar = "x";
-		}
 		String coolIn = "";
 		for (int i = 0; i < in.length(); i++) {
 			String a = Character.toString(in.charAt(i));
@@ -77,7 +77,7 @@ public class Calc extends JFrame implements ActionListener {
 		String[] inT = coolIn.split(" ");
 		ArrayList<String> out = new ArrayList<String>();
 		for (String i : inT) {
-			out.add((i.matches("^[-]?[a-z]$"))?"-1"+i.replace("-", ""):i);
+			out.add((!i.matches("^[-]?[a-z]$"))?i:(i.contains("-"))?"-1"+i.replace("-", ""):"1"+i);
 		}
 		return out;
 	}
@@ -86,26 +86,27 @@ public class Calc extends JFrame implements ActionListener {
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[*/]")) {
 				if (i!=0&&i+1!=out.size()) {
-					double temp = Double.parseDouble(out.get(i-1).replace(inputVar, ""));
-					double temp2 = Double.parseDouble(out.get(i+1).replace(inputVar, ""));
-					boolean cont = containsX(out.get(i-1)+out.get(i+1));
+					double temp = Double.parseDouble(out.get(i-1).replaceAll("[a-zA-z]", ""));
+					double temp2 = Double.parseDouble(out.get(i+1).replaceAll("[a-zA-z]", ""));
+					String temp3 = out.get(i-1);
+					String temp4 = out.get(i+1);
 					if (in.get(i).contentEquals("*")) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (cont)?(temp*temp2)+inputVar:(temp*temp2)+"");
+							out.add(i-1,(temp*temp2)+newLetterM(temp3, temp4));
 						} catch (Exception e) {
-							out.add((cont)?(temp*temp2)+inputVar:(temp*temp2)+"");
+							out.add((temp*temp2)+newLetterM(temp3, temp4));
 						}
 					}else if (in.get(i).contentEquals("/")) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (cont)?(temp/temp2)+inputVar:(temp/temp2)+"");
+							out.add(i-1, (temp/temp2)+newLetterD(temp3, temp4));
 						} catch (Exception e) {
-							out.add((cont)?(temp/temp2)+inputVar:(temp/temp2)+"");
+							out.add((temp/temp2)+newLetterD(temp3, temp4));
 						}
 					}
 				}
@@ -118,27 +119,27 @@ public class Calc extends JFrame implements ActionListener {
 		for (int i = 0; i < out.size(); i++) {
 			if (out.get(i).matches("[+-]")) {
 				if (i!=0&&i+1!=out.size()) {
-					double temp = Double.parseDouble(out.get(i-1).replace(inputVar, ""));
-					double temp2 = Double.parseDouble(out.get(i+1).replace(inputVar, ""));
-					boolean x1 = containsX(out.get(i-1));
-					boolean x2 = containsX(out.get(i+1));
-					if (in.get(i).contentEquals("+")&&x1==x2) {
+					double temp = Double.parseDouble(out.get(i-1).replaceAll("[a-zA-z]", ""));
+					double temp2 = Double.parseDouble(out.get(i+1).replaceAll("[a-zA-z]", ""));
+					boolean x1 = isSameTerm(out.get(i-1), out.get(i+1));
+					String temp3 = out.get(i-1).replaceAll("[^a-zA-Z]", "");
+					if (in.get(i).contentEquals("+")&&x1) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (x1)?(temp+temp2)+inputVar:(temp+temp2)+"");
+							out.add(i-1, (temp3!=null)?(temp+temp2)+temp3:(temp+temp2)+"");
 						} catch (Exception e) {
-							out.add((x1)?(temp+temp2)+inputVar:(temp+temp2)+"");
+							out.add((temp3!=null)?(temp+temp2)+temp3:(temp+temp2)+"");
 						}
-					}else if (in.get(i).contentEquals("-")&&x1==x2) {
+					}else if (in.get(i).contentEquals("-")&&x1) {
 						out.remove(i+1);
 						out.remove(i);
 						out.remove(i-1);
 						try {
-							out.add(i-1, (x1)?(temp-temp2)+inputVar:(temp-temp2)+"");
+							out.add(i-1, (temp3!=null)?(temp-temp2)+temp3:(temp-temp2)+"");
 						} catch (Exception e) {
-							out.add((x1)?(temp-temp2)+inputVar:(temp-temp2)+"");
+							out.add((temp3!=null)?(temp-temp2)+temp3:(temp-temp2)+"");
 						}
 					}
 				}
@@ -159,10 +160,7 @@ public class Calc extends JFrame implements ActionListener {
 		}
 		updateOutPutText("\n");
 	}
-	public boolean containsX(String s) {
-		return s.contains(inputVar);
-	}
-	public String[] isolateTerms(ArrayList<String> varS,ArrayList<String> intS) {
+/*	public String[] isolateTerms(ArrayList<String> varS,ArrayList<String> intS) {
 		String[] out = new String[2];
 		double vars = 0;
 		double constants = 0;
@@ -183,7 +181,7 @@ public class Calc extends JFrame implements ActionListener {
 			if(s.matches("[-]?[0-9.]*"+inputVar)) {
 				vars-=(lastIsNeg)?-Double.parseDouble(s.replaceAll("[^0-9.-]", "")):Double.parseDouble(s.replaceAll("[^0-9.-]", ""));
 			}else if(s.matches("^[-]?[0-9.]+$")) {
-					constants+=(lastIsNeg)?-Double.parseDouble(s):Double.parseDouble(s);
+				constants+=(lastIsNeg)?-Double.parseDouble(s):Double.parseDouble(s);
 			}
 		}
 		
@@ -197,5 +195,18 @@ public class Calc extends JFrame implements ActionListener {
 		double b = (!intS.get(0).equals("-"))?Double.parseDouble(intS.get(0)):Double.parseDouble(intS.get(1));
 		varS.set(0, inputVar);
 		intS.set(0, (b/a)+"");
+	}*/
+	public boolean isSameTerm(String a1, String a2) {
+		return a1.replaceAll("[^a-zA-Z]", "").equals(a2.replaceAll("[^a-zA-Z]", ""));
+	}
+	public String newLetterM(String a1, String a2) {
+		int in1 = (a1.replaceAll("[^a-zA-Z]", "").length()>0)?a1.replaceAll("[^a-zA-Z]", "").charAt(0)-96:-1;
+		int in2 = (a2.replaceAll("[^a-zA-Z]", "").length()>0)?a2.replaceAll("[^a-zA-Z]", "").charAt(0)-96:-1;
+		return (in1+in2>=0)?Character.toString(lex[in1+in2]):"";
+	}
+	public String newLetterD(String a1, String a2) {
+		int in1 = (a1.replaceAll("[^a-zA-Z]", "").length()>0)?a1.replaceAll("[^a-zA-Z]", "").charAt(0)-96:-1;
+		int in2 = (a2.replaceAll("[^a-zA-Z]", "").length()>0)?a2.replaceAll("[^a-zA-Z]", "").charAt(0)-96:-1;
+		return (in1+in2>=0)?Character.toString(lex[in1+in2]):"";
 	}
 }
