@@ -9,14 +9,14 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 @SuppressWarnings({ "unchecked", "serial" ,"static-access"})
-public class Calc extends JFrame implements ActionListener {
+public class Calc23 extends JFrame implements ActionListener {
 	public static void main(String[] args) {
-		new Calc();
+		new Calc23();
 	}
 	JTextField tf1;
 	JTextArea op;  
 	String inputVar = "";
-	Calc(){  
+	Calc23(){  
 		JFrame f=new JFrame();  
 		tf1=new JTextField();  
 		op=new JTextArea();
@@ -37,16 +37,23 @@ public class Calc extends JFrame implements ActionListener {
 		ArrayList<String> varS = format(tf1.getText().split("=")[0]);
 		ArrayList<String> intS = new ArrayList<String>();
 		try {
+			inputVar = Character.toString(tf1.getText().replaceAll("[^a-z]", "").charAt(0));
+		} catch (Exception e1) {
+			inputVar = "x";
+		}
+		try {
 			intS = format(tf1.getText().split("=")[1]);
 		} catch (Exception e2) {
 			intS.add("0");
 		}
 		addNewEquation(varS, intS);
+		op.setText(op.getText()+"Multiply\n");
 		while (varS.contains("*")||varS.contains("/")||intS.contains("*")||intS.contains("/")) {
 			doMultDiv(varS);
 			doMultDiv(intS);
 			addNewEquation(varS, intS);
 		}
+		op.setText(op.getText()+"Add like terms\n");
 		ArrayList<String> varS2 = new ArrayList<String>();
 		ArrayList<String> intS2 = new ArrayList<String>();
 		while ((varS.contains("+")||varS.contains("-")||intS.contains("+")||intS.contains("-"))&&(!varS2.equals(varS)||!intS2.equals(intS))) {
@@ -56,19 +63,17 @@ public class Calc extends JFrame implements ActionListener {
 			doPlusMin(intS);
 			addNewEquation(varS, intS);
 		}
+		op.setText(op.getText()+"Isolate the varibles\n");
 		String[] iso = isolateTerms(varS,intS);
 		varS = format(iso[0]);
 		intS = format(iso[1]);
 		addNewEquation(varS, intS);
+		op.setText(op.getText()+"divide by the coefficient\n");
 		divideByCo(varS, intS);
-		 addNewEquation(varS, intS);
+		addNewEquation(varS, intS);
 	}
 	public ArrayList<String> format(String in){
-		try {
-			inputVar = Character.toString(in.replaceAll("[^a-z]", "").charAt(0));
-		} catch (Exception e) {
-			inputVar = "x";
-		}
+		System.out.println(inputVar);
 		String coolIn = "";
 		for (int i = 0; i < in.length(); i++) {
 			String a = Character.toString(in.charAt(i));
@@ -193,6 +198,7 @@ public class Calc extends JFrame implements ActionListener {
 	}
 	public void divideByCo(ArrayList<String> varS,ArrayList<String> intS) {
 		String s = varS.get(0).replace(inputVar, "");
+		System.out.println(s+"\t"+inputVar);
 		double a = (!s.matches("-"))? Double.parseDouble(s):Double.parseDouble(varS.get(1).replace(inputVar, ""));
 		double b = (!intS.get(0).equals("-"))?Double.parseDouble(intS.get(0)):Double.parseDouble(intS.get(1));
 		varS.set(0, inputVar);
