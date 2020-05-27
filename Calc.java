@@ -77,7 +77,7 @@ public class Calc extends JFrame implements ActionListener {
 		String[] inT = coolIn.split(" ");
 		ArrayList<String> out = new ArrayList<String>();
 		for (String i : inT) {
-			out.add((i.matches("^[-]?[a-z]$"))?"-1"+i.replace("-", ""):i);
+			out.add(!(i.matches("^[-]?[a-z]$"))?i:(i.contains("-"))?"-1"+i.replace("-", ""):"1"+i);
 		}
 		return out;
 	}
