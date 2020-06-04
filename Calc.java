@@ -15,7 +15,7 @@ public class Calc23 extends JFrame implements ActionListener {
 	}
 	JTextField tf1;
 	JTextArea op;  
-	String inputVar = "";
+	String inputVar = "x";
 	Calc23(){  
 		JFrame f=new JFrame();  
 		tf1=new JTextField();  
@@ -34,7 +34,8 @@ public class Calc23 extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e){  
 		op.setText("");
-		ArrayList<String> varS = format(tf1.getText().split("=")[0]);
+		parens(tf1.getText().split("=")[0]);
+		/*ArrayList<String> varS = format(tf1.getText().split("=")[0]);
 		ArrayList<String> intS = new ArrayList<String>();
 		try {
 			inputVar = Character.toString(tf1.getText().replaceAll("[^a-z]", "").charAt(0));
@@ -71,20 +72,7 @@ public class Calc23 extends JFrame implements ActionListener {
 		op.setText(op.getText()+"divide by the coefficient\n");
 		divideByCo(varS, intS);
 		addNewEquation(varS, intS);
-	}
-	public ArrayList<String> format(String in){
-		System.out.println(inputVar);
-		String coolIn = "";
-		for (int i = 0; i < in.length(); i++) {
-			String a = Character.toString(in.charAt(i));
-			coolIn+=(!(a.matches("[^0-9a-z. ]"))||i==0)?a:" "+a+" ";
-		}
-		String[] inT = coolIn.split(" ");
-		ArrayList<String> out = new ArrayList<String>();
-		for (String i : inT) {
-			out.add(!(i.matches("^[-]?[a-z]$"))?i:(i.contains("-"))?"-1"+i.replace("-", ""):"1"+i);
-		}
-		return out;
+		*/
 	}
 	public void doMultDiv(ArrayList<String> in){
 		ArrayList<String> out = in;
@@ -198,10 +186,81 @@ public class Calc23 extends JFrame implements ActionListener {
 	}
 	public void divideByCo(ArrayList<String> varS,ArrayList<String> intS) {
 		String s = varS.get(0).replace(inputVar, "");
-		System.out.println(s+"\t"+inputVar);
 		double a = (!s.matches("-"))? Double.parseDouble(s):Double.parseDouble(varS.get(1).replace(inputVar, ""));
 		double b = (!intS.get(0).equals("-"))?Double.parseDouble(intS.get(0)):Double.parseDouble(intS.get(1));
 		varS.set(0, inputVar);
 		intS.set(0, (b/a)+"");
+	}
+	public void parens(String in) {
+		ArrayList<String> out = new ArrayList<String>();
+		String[] inArr = in.replaceAll("[(]", "(_").split("[()]");
+		for(int i = 0;i<inArr.length;i++) {
+			if(inArr[i].matches("[^_].*[*]")) {
+				if(i<inArr.length-1) {
+					if(inArr[i+1].matches("[_].*")) {
+						int store = 0;
+						for (int j = inArr[i].length()-1; j > 0; j--) {
+							if(Character.toString(inArr[i].charAt(j)).matches("[+-]")) {
+								store = j+1;
+								break;
+							}
+						}
+						double temp = Double.parseDouble(inArr[i].substring(store).replaceAll("[^0-9.-]", ""));
+						String tempOut = "";
+						for(String j: format(inArr[i+1])) {
+							if(!j.equals("+")&&!j.equals("-")&&!j.equals("/")&&!j.equals("_")) {
+								tempOut+=(!j.replaceAll("[a-zA-z-]", "").equals(""))?Double.parseDouble(j.replaceAll("[a-zA-z-]", ""))*temp:temp;
+								if(j.contains("x")) {
+									tempOut+="x";
+								}
+							}else if(!j.equals("_")) {
+								tempOut+=j;
+							}
+						}
+						out.add(inArr[i].substring(0,store));
+						out.add(tempOut);
+					}
+				}
+			}else {
+				if(inArr[i].contains("_")) {
+					inArr[i] = inArr[i].replaceAll("_", "");
+					ArrayList<String> temp = format(inArr[i]);
+					while (temp.contains("*")||temp.contains("/")) {
+						doMultDiv(temp);
+					}
+					ArrayList<String> varS2 = new ArrayList<String>();
+					while ((temp.contains("+")||temp.contains("-")&&(!varS2.equals(temp)))) {
+						varS2 = (ArrayList<String>) temp.clone();
+						doPlusMin(temp);
+						doPlusMin(temp);
+					}
+					String out2 = "";
+					for(String j:temp) {
+						out2+=j;
+					}
+					out.add(out2);
+				}else {
+					out.add(inArr[i]);
+				}
+			}
+		}	
+		in = "";
+		for(String i:out) {
+			in+=i;
+		}
+		System.out.println(in);
+	}
+	public ArrayList<String> format(String in){
+		String coolIn = "";
+		for (int i = 0; i < in.length(); i++) {
+			String a = Character.toString(in.charAt(i));
+			coolIn+=(!(a.matches("[^0-9a-z. ]"))||i==0)?a:" "+a+" ";
+		}
+		String[] inT = coolIn.split(" ");
+		ArrayList<String> out = new ArrayList<String>();
+		for (String i : inT) {
+			out.add(!(i.matches("^[-]?[a-z]$"))?i:(i.contains("-"))?"-1"+i.replace("-", ""):"1"+i);
+		}
+		return out;
 	}
 }
