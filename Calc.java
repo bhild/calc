@@ -194,32 +194,30 @@ public class Calc23 extends JFrame implements ActionListener {
 	public void parens(String in) {
 		ArrayList<String> out = new ArrayList<String>();
 		String[] inArr = in.replaceAll("[(]", "(_").split("[()]");
-		for(int i = 0;i<inArr.length;i++) {
-			if(inArr[i].matches("[^_].*[*]")) {
-				if(i<inArr.length-1) {
-					if(inArr[i+1].matches("[_].*")) {
-						int store = 0;
-						for (int j = inArr[i].length()-1; j > 0; j--) {
-							if(Character.toString(inArr[i].charAt(j)).matches("[+-]")) {
-								store = j+1;
-								break;
+		for(int i = 1;i<inArr.length;i++) {
+			if(inArr[i-1].matches("[^_].*[*]")) {
+				if(inArr[i].matches("[_].*")) {
+					int store = 0;
+					for (int j = inArr[i-1].length()-1; j > 0; j--) {
+						if(Character.toString(inArr[i-1].charAt(j)).matches("[+-]")) {
+							store = j+1;
+							break;
 							}
-						}
-						double temp = Double.parseDouble(inArr[i].substring(store).replaceAll("[^0-9.-]", ""));
-						String tempOut = "";
-						for(String j: format(inArr[i+1])) {
-							if(!j.equals("+")&&!j.equals("-")&&!j.equals("/")&&!j.equals("_")) {
-								tempOut+=(!j.replaceAll("[a-zA-z-]", "").equals(""))?Double.parseDouble(j.replaceAll("[a-zA-z-]", ""))*temp:temp;
-								if(j.contains("x")) {
-									tempOut+="x";
-								}
-							}else if(!j.equals("_")) {
-								tempOut+=j;
-							}
-						}
-						out.add(inArr[i].substring(0,store));
-						out.add(tempOut);
 					}
+					double temp = Double.parseDouble(inArr[i-1].substring(store).replaceAll("[^0-9.-]", ""));
+					String tempOut = "";
+					for(String j: format(inArr[i])) {
+						if(!j.equals("+")&&!j.equals("-")&&!j.equals("/")&&!j.equals("_")) {
+							tempOut+=(!j.replaceAll("[a-zA-z-]", "").equals(""))?Double.parseDouble(j.replaceAll("[a-zA-z-]", ""))*temp:temp;
+							if(j.contains("x")) {
+								tempOut+="x";
+							}
+						}else if(!j.equals("_")) {
+							tempOut+=j;
+						}
+					}
+					out.add(inArr[i-1].substring(0,store));
+					out.add(tempOut);
 				}
 			}else {
 				if(inArr[i].contains("_")) {
@@ -229,8 +227,9 @@ public class Calc23 extends JFrame implements ActionListener {
 						doMultDiv(temp);
 					}
 					ArrayList<String> varS2 = new ArrayList<String>();
-					while ((temp.contains("+")||temp.contains("-")&&(!varS2.equals(temp)))) {
+					while ((temp.contains("+")||temp.contains("-"))&&!varS2.equals(temp)) {
 						varS2 = (ArrayList<String>) temp.clone();
+						System.out.println(!varS2.equals(temp));
 						doPlusMin(temp);
 						doPlusMin(temp);
 					}
