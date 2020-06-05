@@ -209,7 +209,7 @@ public class Calc23 extends JFrame implements ActionListener {
 					double temp = Double.parseDouble(inArr[i-1].substring(store).replaceAll("[^0-9.-]", ""));
 					String tempOut = "";
 					for(String j: format(inArr[i])) {
-						if(!j.equals("+")&&!j.equals("-")&&!j.equals("/")&&!j.equals("_")) {
+						if(!j.equals("+")&&!j.equals("-")&&!j.equals("/")&&!j.equals("_")&&!j.equals("*")) {
 							tempOut+=(!j.replaceAll("[a-zA-z-]", "").equals(""))?Double.parseDouble(j.replaceAll("[a-zA-z-]", ""))*temp:temp;
 							if(j.contains("x")) {
 								tempOut+="x";
