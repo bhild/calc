@@ -15,7 +15,7 @@ public class Calc23 extends JFrame implements ActionListener {
 	}
 	JTextField tf1;
 	JTextArea op;  
-	String inputVar = "x";
+	String inputVar = "";
 	Calc23(){  
 		JFrame f=new JFrame();  
 		tf1=new JTextField();  
@@ -35,7 +35,7 @@ public class Calc23 extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e){  
 		op.setText("");
 		parens(tf1.getText().split("=")[0]);
-		/*ArrayList<String> varS = format(tf1.getText().split("=")[0]);
+		ArrayList<String> varS = format(parens(tf1.getText().split("=")[0]));
 		ArrayList<String> intS = new ArrayList<String>();
 		try {
 			inputVar = Character.toString(tf1.getText().replaceAll("[^a-z]", "").charAt(0));
@@ -43,7 +43,7 @@ public class Calc23 extends JFrame implements ActionListener {
 			inputVar = "x";
 		}
 		try {
-			intS = format(tf1.getText().split("=")[1]);
+			intS = format(parens(tf1.getText().split("=")[1]));
 		} catch (Exception e2) {
 			intS.add("0");
 		}
@@ -72,7 +72,6 @@ public class Calc23 extends JFrame implements ActionListener {
 		op.setText(op.getText()+"divide by the coefficient\n");
 		divideByCo(varS, intS);
 		addNewEquation(varS, intS);
-		*/
 	}
 	public void doMultDiv(ArrayList<String> in){
 		ArrayList<String> out = in;
@@ -191,9 +190,12 @@ public class Calc23 extends JFrame implements ActionListener {
 		varS.set(0, inputVar);
 		intS.set(0, (b/a)+"");
 	}
-	public void parens(String in) {
+	public String parens(String in) {
 		ArrayList<String> out = new ArrayList<String>();
 		String[] inArr = in.replaceAll("[(]", "(_").split("[()]");
+		if(inArr.length==1) {
+			return in;
+		}
 		for(int i = 1;i<inArr.length;i++) {
 			if(inArr[i-1].matches("[^_].*[*]")) {
 				if(inArr[i].matches("[_].*")) {
@@ -220,6 +222,9 @@ public class Calc23 extends JFrame implements ActionListener {
 					out.add(tempOut);
 				}
 			}else {
+				if(i==1) {
+					out.add(inArr[i-1]);
+				}
 				if(inArr[i].contains("_")) {
 					inArr[i] = inArr[i].replaceAll("_", "");
 					ArrayList<String> temp = format(inArr[i]);
@@ -229,7 +234,6 @@ public class Calc23 extends JFrame implements ActionListener {
 					ArrayList<String> varS2 = new ArrayList<String>();
 					while ((temp.contains("+")||temp.contains("-"))&&!varS2.equals(temp)) {
 						varS2 = (ArrayList<String>) temp.clone();
-						System.out.println(!varS2.equals(temp));
 						doPlusMin(temp);
 						doPlusMin(temp);
 					}
@@ -247,7 +251,7 @@ public class Calc23 extends JFrame implements ActionListener {
 		for(String i:out) {
 			in+=i;
 		}
-		System.out.println(in);
+		return in;
 	}
 	public ArrayList<String> format(String in){
 		String coolIn = "";
